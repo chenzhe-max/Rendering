@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.12)
+
+project(   #CMake不支持把project写成多行括号格式，无语了
+    CPUPathTracing
+    LANGUAGES CXX
+)
+
+add_subdirectory(thirdparty/glm)
+
+add_subdirectory(source)
