@@ -62,7 +62,7 @@ void ThreadPool::parallelFor(size_t width, size_t height, const std::function<vo
     Guard guard(spin_lock);
     for(size_t x = 0; x < width; x++){
         for(size_t y = 0; y < height; y++){
-            tasks.push_back(new ParallelForTask(x, y, lambda));
+            tasks.push(new ParallelForTask(x, y, lambda));
         }
     }
 }
@@ -79,7 +79,7 @@ void ThreadPool::addTask(Task *task)
 {
     Guard guard(spin_lock); //用自旋锁了不用mutex了
     //std::lock_guard<std::mutex> guard(lock); 进入函数自动获取锁，推出函数自动把锁释放
-    tasks.push_back(task);
+    tasks.push(task);
 }
 Task *ThreadPool::getTask()
 {
@@ -90,6 +90,6 @@ Task *ThreadPool::getTask()
         return nullptr;
     }
     Task* task = tasks.front();
-    tasks.pop_front();  //队首的任务拿出来然后删掉
+    tasks.pop();  //队首的任务拿出来然后删掉
     return task;
 }
