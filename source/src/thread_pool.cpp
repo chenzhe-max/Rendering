@@ -8,6 +8,7 @@ void ThreadPool::WorkerThread(ThreadPool *master)
         if(task != nullptr)
         {
             task-> run();
+            master->pending_task_count--;
         }else{
             std::this_thread::yield(); //告诉系统我现在不急，可以让别的线程先跑
         }
@@ -17,6 +18,7 @@ void ThreadPool::WorkerThread(ThreadPool *master)
 ThreadPool::ThreadPool(size_t thread_count) //实现一下ThreadPool的构造函数和析构函数
 {
     alive = 1;
+    pending_task_count = 0;
     if(thread_count == 0)
     {
         thread_count = std::thread::hardware_concurrency();
@@ -62,6 +64,7 @@ void ThreadPool::parallelFor(size_t width, size_t height, const std::function<vo
     Guard guard(spin_lock);
     for(size_t x = 0; x < width; x++){
         for(size_t y = 0; y < height; y++){
+            pending_task_count++;
             tasks.push(new ParallelForTask(x, y, lambda));
         }
     }
@@ -69,7 +72,7 @@ void ThreadPool::parallelFor(size_t width, size_t height, const std::function<vo
 
 void ThreadPool::wait() const
 {
-    while( !tasks.empty())
+    while(pending_task_count > 0)
     {
         std::this_thread::yield();
     }
@@ -79,6 +82,7 @@ void ThreadPool::addTask(Task *task)
 {
     Guard guard(spin_lock); //用自旋锁了不用mutex了
     //std::lock_guard<std::mutex> guard(lock); 进入函数自动获取锁，推出函数自动把锁释放
+    pending_task_count++;
     tasks.push(task);
 }
 Task *ThreadPool::getTask()

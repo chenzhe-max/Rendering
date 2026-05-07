@@ -12,3 +12,9 @@ public:
     //求光线交点的函数，t传播的距离，返回光线在原点向direction方向传播t距离后的点
     glm::vec3 hit(float t) const {return origin + t * direction; }
 };
+
+struct HitInfo{
+    float t;
+    glm::vec3 hit_point;
+    glm::vec3 normal;
+};

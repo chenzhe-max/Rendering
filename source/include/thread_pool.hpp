@@ -25,6 +25,7 @@ private:
     std::vector<std::thread> threads; // 用vector来存放所有的线程
     std::queue<Task *> tasks; //一开始用list来存储所有的任务（list添加和删除都是O(1))，后来换成了queue
     //std::mutex lock; 多个线程与主线程在获取和添加任务的时候会有资源的竞争，用锁来避免这种情况
+    std::atomic<int> pending_task_count;//每新增一个任务，这个变量就加1，代表多了一个未完成的任务,执行完run函数就减1，代表完成了一个任务
     SpinLock spin_lock{};
 
     std::atomic<int> alive; //表示这个线程池是否还存在，防止线程死循环，构造的时候是true，析构的时候是false
