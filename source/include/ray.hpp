@@ -11,6 +11,8 @@ public:
 
     //求光线交点的函数，t传播的距离，返回光线在原点向direction方向传播t距离后的点
     glm::vec3 hit(float t) const {return origin + t * direction; }
+    //将光线从世界坐标转换成对象坐标
+    Ray objectFromWorld(const glm::mat4 &object_from_world) const;
 };
 
 struct HitInfo{
