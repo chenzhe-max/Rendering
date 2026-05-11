@@ -1,4 +1,4 @@
-﻿#include "sphere.hpp"
+﻿#include "shape/sphere.hpp"
 
 //用于相交测试的函数
 std::optional<HitInfo> Sphere::intersect(const Ray &ray, float t_min, float t_max) const {

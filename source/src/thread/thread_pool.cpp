@@ -1,5 +1,6 @@
-﻿#include "thread_pool.hpp"
+﻿#include "thread/thread_pool.hpp"
 
+ThreadPool thread_pool{}; //全局变量
 void ThreadPool::WorkerThread(ThreadPool *master)
 {
     while(master -> alive == 1)

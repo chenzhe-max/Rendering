@@ -1,6 +1,8 @@
 ﻿//用于定义光线
 #pragma once 
 
+#include "../material/material.hpp"
+
 #include <glm/glm.hpp>
 
 class Ray
@@ -19,4 +21,5 @@ struct HitInfo{
     float t;
     glm::vec3 hit_point;
     glm::vec3 normal;
+    const Material *material = nullptr;
 };

@@ -1,4 +1,4 @@
-﻿#include "triangle.hpp"
+﻿#include "shape/triangle.hpp"
 //使用MT算法来进行三角形相交检测
 std::optional<HitInfo> Triangle::intersect(const Ray &ray, float t_min, float t_max) const {
     glm::vec3 e1 = p1 - p0;

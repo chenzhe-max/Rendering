@@ -1,61 +1,57 @@
-﻿#include <atomic>
-#include <glm/glm.hpp>
-#include "glm/geometric.hpp"
-#include "thread_pool.hpp"
-#include "film.hpp"
-#include "camera.hpp"
-#include "sphere.hpp"
-#include <iostream>
-#include "model.hpp"
-#include "plane.hpp"
-#include "scene.hpp"
-int main()
-{
-    ThreadPool thread_pool {};
-    Film film {1920, 1080};
-    Camera camera{ film, {-1.6, 0, 0}, {0, 0, 0}, 90};
-    std::atomic<int> count = 0;
+﻿#include "camera/camera.hpp"
+#include "shape/sphere.hpp"
+#include "shape/model.hpp"
+#include "shape/plane.hpp"
+#include "shape/scene.hpp"
+#include "util/rgb.hpp"
+#include "renderer/normal_renderer.hpp"
+#include "renderer/simple_rt_renderer.hpp"
+
+int main() {
+    Film film { 192 * 4, 108 * 4 };
+    Camera camera { film, { -3.6, 0, 0 }, { 0, 0, 0 }, 45 };
 
     Model model("models/simple_dragon.obj");
-    Sphere sphere{
-        {0, 0, 0},
-        0.5f
+    Sphere sphere {
+        { 0, 0, 0 },
+        1
     };
-    Plane plane{
-        {0, 0, 0},
-        {0, 1, 0}
+    Plane plane {
+        { 0, 0, 0 },
+        { 0, 1, 0 }
     };
-    Scene scene{};
-    scene.addShape(&model,{0, 0, 0}, {1, 3, 2});
-    scene.addShape(&sphere, {0, 0, 1.5}, {0.3, 0.3, 0.3});
-    scene.addShape(&plane, {0, -0.5, 0});
-    //添加一个光源
-    glm::vec3 Light_pos {-1, 2, 1 };
-    thread_pool.parallelFor(film.getWidth(), film.getHeight(), [&](size_t x, size_t y){
-    auto ray = camera.generateRay({ x, y });
-    auto hit_info = scene.intersect(ray);
-    if(hit_info.has_value())
-    {
-       
-        //得到光照方向L
-        auto L = glm::normalize(Light_pos - hit_info->hit_point);
-        //计算出余弦值并且把余弦值当作颜色写入胶片中
-        float cosine = glm::max(0.f, glm::dot(hit_info->normal, L));
-        film.setPixel(x, y, {cosine, cosine, cosine});
 
-    }
-    int n = ++count;
-    if(n % film.getWidth() == 0)
-    {
-        std::cout << static_cast<float>(n) / (film.getHeight() * film.getWidth()) << std::endl;
-    }
-});
-    thread_pool.wait();
-    film.save("test.ppm");
-  
-    
+    Scene scene {};
+    scene.addShape(
+        model,
+        { RGB(202, 159, 117) },
+        { 0, 0, 0 },
+        { 1, 3, 2 }
+    );
+    scene.addShape(
+        sphere,
+        { { 1, 1, 1 }, false, RGB(255, 128, 128) },
+        { 0, 0, 2.5 }
+    );
+    scene.addShape(
+        sphere,
+        { { 1, 1, 1 }, false, RGB(128, 128, 255) },
+        { 0, 0, -2.5 }
+    );
+    scene.addShape(
+        sphere,
+        { { 1, 1, 1 }, true },
+        { 3, 0.5, -2 }
+    );
+    scene.addShape(plane, { RGB(120, 204, 157) }, { 0, -0.5, 0 });
+
+    NormalRenderer normal_renderer { camera, scene };
+    normal_renderer.render(1, "normal.ppm");
+
+    film.clear();
+
+    SimpleRTRenderer simple_rt_renderer { camera, scene };
+    simple_rt_renderer.render(128, "test.ppm");
 
     return 0;
 }
-
-

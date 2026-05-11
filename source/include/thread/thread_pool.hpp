@@ -30,3 +30,5 @@ private:
 
     std::atomic<int> alive; //表示这个线程池是否还存在，防止线程死循环，构造的时候是true，析构的时候是false
 };
+
+extern ThreadPool thread_pool{}; 
