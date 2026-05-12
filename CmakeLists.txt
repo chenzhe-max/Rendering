@@ -5,6 +5,8 @@ project(   #CMake不支持把project写成多行括号格式，无语了
     LANGUAGES CXX
 )
 
-add_subdirectory(thirdparty/glm)
+set(CMAKE_BUILD_TYPE Release) #从debug变release，显著提升速度
 
+add_subdirectory(thirdparty/rapidobj)
+add_subdirectory(thirdparty/glm)
 add_subdirectory(source)

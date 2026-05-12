@@ -8,6 +8,7 @@ class Task //Task就是每个线程会去执行的任务
 {
 public:
     virtual void run() = 0; //之后所有的任务都会去实现这个run函数
+    virtual ~Task() = default;
 };
 
 class ThreadPool
@@ -16,7 +17,7 @@ public:
     static void WorkerThread(ThreadPool *master);
     ThreadPool(size_t thread_count = 0);
     ~ThreadPool();
-    void parallelFor(size_t width, size_t height, const std::function<void(size_t, size_t)> &lambda);//并行for循环
+    void parallelFor(size_t width, size_t height, const std::function<void(size_t, size_t)> &lambda, bool complex = true);//并行for循环
     void wait() const; //让主线程等待所有任务执行完成
     void addTask(Task *task); //添加一个任务
     Task *getTask();          //获取一个任务
@@ -31,4 +32,4 @@ private:
     std::atomic<int> alive; //表示这个线程池是否还存在，防止线程死循环，构造的时候是true，析构的时候是false
 };
 
-extern ThreadPool thread_pool{}; 
+extern ThreadPool thread_pool; //声明就行，别定义，全局变量是一次定义+多处声明

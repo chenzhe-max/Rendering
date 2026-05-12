@@ -1,13 +1,17 @@
 ﻿#include "renderer/base_renderer.hpp"
 #include "thread/thread_pool.hpp"
 #include "util/progress.hpp"
+#include "util/profile.hpp"
 #include <iostream>
+#include <string>
 
 //渲染1ssp再渲染2spp，慢慢提升图片质量，因为渲染可能会比较慢
 void BaseRenderer::render(size_t spp, const std::filesystem::path &filename) {
-    size_t current_spp = 0, increase = 1; //increase代表了一次并行for循环渲染多少spp
+    PROFILE("Render " + std::to_string(spp) + "spp " + filename.string());
+
+    size_t current_spp = 0, increase = 1;
     auto &film = camera.getFilm();
-    Progress progress(film.getWidth() * film.getHeight() * spp);
+    Progress progress(film.getWidth() * film.getHeight() * spp, 20);
     while (current_spp < spp) {
         thread_pool.parallelFor(film.getWidth(), film.getHeight(), [&](size_t x, size_t y) {
             for (int i = 0; i < increase; i ++) {
