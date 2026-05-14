@@ -1,10 +1,14 @@
 ﻿#include "thread/thread_pool.hpp"
-#include "util/profile.hpp"
 ThreadPool thread_pool{}; //全局变量
 void ThreadPool::WorkerThread(ThreadPool *master)
 {
     while(master -> alive == 1)
     {
+         if (master->tasks.empty()) //防止工作线程和BVH线程抢cpu的资源
+         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+            continue;
+        }
         Task *task = master -> getTask();
         if(task != nullptr)
         {
@@ -67,7 +71,6 @@ private:
 
 void ThreadPool::parallelFor(size_t width, size_t height, const std::function<void(size_t, size_t)> &lambda, bool complex) //判断是不是复杂函数，复杂函数就每个线程16个任务，不复杂就每个线程1个任务
 {
-    PROFILE("parallelFor")
     Guard guard(spin_lock);
    float chunk_width_float = static_cast<float>(width) / sqrt(threads.size());
     float chunk_height_float = static_cast<float>(height) / sqrt(threads.size());

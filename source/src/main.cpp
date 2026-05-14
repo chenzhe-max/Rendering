@@ -6,12 +6,13 @@
 #include "util/rgb.hpp"
 #include "renderer/normal_renderer.hpp"
 #include "renderer/simple_rt_renderer.hpp"
+#include "renderer/debug_renderer.hpp"
 
 int main() {
     Film film { 192 * 4, 108 * 4 };
-    Camera camera { film, { -3.6, 0, 0 }, { 0, 0, 0 }, 45 };
+    Camera camera { film, { -12, 5, -12 }, { 0, 0, 0 }, 45 };
 
-    Model model("models/simple_dragon.obj");
+    Model model("models/dragon_871k.obj");
     Sphere sphere {
         { 0, 0, 0 },
         1
@@ -22,33 +23,48 @@ int main() {
     };
 
     Scene scene {};
-    scene.addShape(
-        model,
-        { RGB(202, 159, 117) },
-        { 0, 0, 0 },
-        { 1, 3, 2 }
-    );
-    scene.addShape(
-        sphere,
-        { { 1, 1, 1 }, false, RGB(255, 128, 128) },
-        { 0, 0, 2.5 }
-    );
-    scene.addShape(
-        sphere,
-        { { 1, 1, 1 }, false, RGB(128, 128, 255) },
-        { 0, 0, -2.5 }
-    );
-    scene.addShape(
-        sphere,
-        { { 1, 1, 1 }, true },
-        { 3, 0.5, -2 }
-    );
+    RNG rng { 1234 };
+    for (int i = 0; i < 10000; i ++) {
+        glm::vec3 random_pos {
+            rng.uniform() * 100 - 50,
+            rng.uniform() * 2,
+            rng.uniform() * 100 - 50,
+        };
+        float u = rng.uniform();
+        if (u < 0.9) {
+            scene.addShape(
+                model,
+                { RGB(202, 159, 117), rng.uniform() > 0.5 },
+                random_pos,
+                { 1, 1, 1 },
+                { rng.uniform() * 360, rng.uniform() * 360, rng.uniform() * 360 }
+            );
+        } else if (u < 0.95) {
+            scene.addShape(
+                sphere,
+                { { rng.uniform(), rng.uniform(), rng.uniform() }, true },
+                random_pos,
+                { 0.4, 0.4, 0.4 }
+            );
+        } else {
+            random_pos.y += 6;
+            scene.addShape(
+                sphere,
+                { { 1, 1, 1 }, false, { rng.uniform() * 4, rng.uniform() * 4, rng.uniform() * 4 } },
+                random_pos
+            );
+        }
+    }
     scene.addShape(plane, { RGB(120, 204, 157) }, { 0, -0.5, 0 });
+    scene.build();
 
     NormalRenderer normal_renderer { camera, scene };
     normal_renderer.render(1, "normal.ppm");
 
-    film.clear();
+    BoundsTestCountRenderer btc_renderer { camera, scene };
+    btc_renderer.render(1, "BTC.ppm");
+    TriangleTestCountRenderer ttc_renderer { camera, scene };
+    ttc_renderer.render(1, "TTC.ppm");
 
     SimpleRTRenderer simple_rt_renderer { camera, scene };
     simple_rt_renderer.render(128, "test.ppm");
@@ -56,32 +72,3 @@ int main() {
     return 0;
 }
 
-
-//博主HeaoYe的测试如下
-// Debug Mode
-// load model 100ms
-// parallelFor 700ms
-// Film::save 130ms
-// render 1spp normal.ppm 5504ms
-// render 128spp test.ppm 1222161ms
-
-// Release Mode
-// load model 19ms
-// parallelFor 400ms
-// Film::save 53ms
-// render 1spp normal.ppm 1189ms
-// render 128spp test.ppm 91556ms
-
-// Change parallelFor
-// parallelFor 0ms
-
-// Change Film::save
-// Film::save 2ms
-
-// Add Bounds
-// load model 29ms
-// render 1spp normal.ppm 235ms
-// render 128spp test.ppm 53841ms
-
-// Use rapidobj
-// load model 2ms

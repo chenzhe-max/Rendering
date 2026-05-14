@@ -22,7 +22,14 @@ struct Triangle : public Shape{
         n2 = normal;//法向量一样是因为是平坦三角形，三个点在一个面上
     }
     std::optional<HitInfo> intersect(const Ray &ray, float t_min, float t_max) const override;//因为是继承的shape所以用override
-
+    Bounds getBounds() const override
+    {
+        Bounds bounds {};
+        bounds.expand(p0);
+        bounds.expand(p1);
+        bounds.expand(p2);
+        return bounds;
+    }
     glm::vec3 p0, p1, p2; //三个顶点的位置
     glm::vec3 n0, n1, n2; //三个顶点的法向量
 };

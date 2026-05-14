@@ -3,13 +3,8 @@
 #pragma once
 
 #include "shape.hpp"
-//ShapeInstance代表一个shape的实例
-struct ShapeInstance {
-    const Shape &shape;
-    Material materail;
-    glm::mat4 world_from_object;
-    glm::mat4 object_from_world;
-};
+#include "../accelerate/scene_bvh.hpp"
+
 
 struct Scene : public Shape {
 public:
@@ -26,6 +21,8 @@ public:
         float t_min = 1e-5,
         float t_max = std::numeric_limits<float>::infinity()
     ) const override;
+    void build() { scene_bvh.build(std::move(instances)); }
 private:
     std::vector<ShapeInstance> instances;
+    SceneBVH scene_bvh {};
 };

@@ -1,25 +1,6 @@
 ﻿#include "shape/model.hpp"
 #include "util/profile.hpp"
 #include <rapidobj/rapidobj.hpp>
-//这里的相交测试就是遍历所有的三角形，寻找最近的交点
-std::optional<HitInfo> Model::intersect(const Ray &ray, float t_min, float t_max) const {
-     if (!bounds.hasIntersection(ray, t_min, t_max)) 
-    {
-        return {};
-    }
-
-    std::optional<HitInfo> closest_hit_info {};
-
-    for (const auto &triangle : triangles) {
-        auto hit_info = triangle.intersect(ray, t_min, t_max);
-        if (hit_info.has_value()) {
-            t_max = hit_info->t;
-            closest_hit_info = hit_info;
-        }
-    }
-
-    return closest_hit_info;
-}
 
 //要加载obj格式的文件，注意obj的定义中索引是从1开始而不是0
 //比如 v 22 12 12    vn 22 12 12     f 4//3 1//2 2//1  T{ 4, 1, 2  3, 2, 1}
@@ -27,9 +8,10 @@ std::optional<HitInfo> Model::intersect(const Ray &ray, float t_min, float t_max
 //这里用rapidobj这个库来加载 ，就不用之前写的代码了 
 Model::Model(const std::filesystem::path &filename)  
 {
-  PROFILE("Load model " + filename.string())
+    PROFILE("Load model " + filename.string())
 
     auto result = rapidobj::ParseFile(filename, rapidobj::MaterialLibrary::Ignore());
+    std::vector<Triangle> triangles;
 
     for (const auto &shape : result.shapes) {
         size_t index_offset = 0;
@@ -89,15 +71,12 @@ Model::Model(const std::filesystem::path &filename)
         }
 
     }
-      build();
+    bvh.build(std::move(triangles));
   
 }
 
-void Model::build() 
+//这里的相交测试就是遍历所有的三角形，寻找最近的交点
+std::optional<HitInfo> Model::intersect(const Ray &ray, float t_min, float t_max) const 
 {
-    for (const auto &triangle : triangles) {
-        bounds.expand(triangle.p0);
-        bounds.expand(triangle.p1);
-        bounds.expand(triangle.p2);
-    }
+    return bvh.intersect(ray, t_min, t_max);
 }
