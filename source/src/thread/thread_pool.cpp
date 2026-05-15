@@ -1,4 +1,5 @@
 ﻿#include "thread/thread_pool.hpp"
+#include <cmath> //开根号和向上取整用
 ThreadPool thread_pool{}; //全局变量
 void ThreadPool::WorkerThread(ThreadPool *master)
 {
@@ -72,11 +73,11 @@ private:
 void ThreadPool::parallelFor(size_t width, size_t height, const std::function<void(size_t, size_t)> &lambda, bool complex) //判断是不是复杂函数，复杂函数就每个线程16个任务，不复杂就每个线程1个任务
 {
     Guard guard(spin_lock);
-   float chunk_width_float = static_cast<float>(width) / sqrt(threads.size());
-    float chunk_height_float = static_cast<float>(height) / sqrt(threads.size());
+   float chunk_width_float = static_cast<float>(width) / std::sqrt(threads.size());
+    float chunk_height_float = static_cast<float>(height) / std::sqrt(threads.size());
     if (complex) {
-        chunk_width_float /= sqrt(16);
-        chunk_height_float /= sqrt(16);
+        chunk_width_float /= std::sqrt(16);
+        chunk_height_float /= std::sqrt(16);
     }
     size_t chunk_width = std::ceil(chunk_width_float);
     size_t chunk_height = std::ceil(chunk_height_float);

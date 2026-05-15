@@ -3,6 +3,7 @@
 #pragma once
 
 #include <chrono>
+#include <string>
 
 #define PROFILE(name) Profile __profile(name);
 
