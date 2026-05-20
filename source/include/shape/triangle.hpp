@@ -33,3 +33,5 @@ struct Triangle : public Shape{
     glm::vec3 p0, p1, p2; //三个顶点的位置
     glm::vec3 n0, n1, n2; //三个顶点的法向量
 };
+
+

@@ -27,3 +27,4 @@ public:
 private:
     SpinLock &spin_lock;
 };
+

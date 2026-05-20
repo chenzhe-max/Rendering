@@ -1,5 +1,5 @@
 ﻿#include "shape/triangle.hpp"
-//使用MT算法来进行三角形相交检测
+
 std::optional<HitInfo> Triangle::intersect(const Ray &ray, float t_min, float t_max) const {
     glm::vec3 e1 = p1 - p0;
     glm::vec3 e2 = p2 - p0;
@@ -17,7 +17,7 @@ std::optional<HitInfo> Triangle::intersect(const Ray &ray, float t_min, float t_
     float hit_t = glm::dot(s2, e2) * inv_det;
     if (hit_t > t_min && hit_t < t_max) {
         glm::vec3 hit_point = ray.hit(hit_t);
-        glm::vec3 normal = (1.f - u - v) * n0 + u * n1 + v * n2; //用三个顶点的法线进行插值
+        glm::vec3 normal = (1.f - u - v) * n0 + u * n1 + v * n2;
         return HitInfo { hit_t, hit_point, glm::normalize(normal) };
     }
     return {};

@@ -82,3 +82,4 @@ private:
     std::vector<BVHNode> nodes;  //存储转换后的线性的数据结构
     std::vector<Triangle> ordered_triangles;
 };
+

@@ -1,5 +1,4 @@
 ﻿//用于生成随机数
-
 #pragma once
 
 #include <random>

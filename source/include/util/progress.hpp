@@ -9,7 +9,7 @@ public:
 
     void update(size_t count);
 private:
-    size_t total, current; //total是总数，count加到current，current除total得到百分数，百分数每增加step就打印一次进度
+    size_t total, current;//total是总数，count加到current，current除total得到百分数，百分数每增加step就打印一次进度
     int percent, last_percent, step;
     SpinLock spin_lock;
 };

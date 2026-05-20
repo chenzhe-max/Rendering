@@ -1,10 +1,8 @@
 ﻿//定义一个场景，场景也可以看作一种shape，场景的形状就是场景包含的所有物体的形状的总和，用vector存放
-
 #pragma once
 
 #include "shape.hpp"
 #include "../accelerate/scene_bvh.hpp"
-
 
 struct Scene : public Shape {
 public:
@@ -21,6 +19,7 @@ public:
         float t_min = 1e-5,
         float t_max = std::numeric_limits<float>::infinity()
     ) const override;
+
     void build() { scene_bvh.build(std::move(instances)); }
 private:
     std::vector<ShapeInstance> instances;

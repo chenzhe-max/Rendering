@@ -18,7 +18,7 @@ void BVH::build(std::vector<Triangle> &&triangles) {
     std::cout << "Mean Leaf Node Triangle Count: " << static_cast<float>(triangle_count) / static_cast<float>(state.leaf_node_count) << std::endl;
     std::cout << "Max Leaf Node Triangle Count: " << state.max_leaf_node_triangle_count << std::endl;
     std::cout << "Max Leaf Node Depth: " << state.max_leaf_node_depth << std::endl;
-    
+
     nodes.reserve(state.total_node_count);
     ordered_triangles.reserve(triangle_count);
     recursiveFlatten(root);
@@ -26,7 +26,7 @@ void BVH::build(std::vector<Triangle> &&triangles) {
 
 void BVH::recursiveSplit(BVHTreeNode *node, BVHState &state) {
     state.total_node_count ++;
-    if (node->triangles.size() == 1 || node->depth > 32) {  //节点中只有一个三角形那当然就不能再分割了 32是为了让栈不溢出
+    if (node->triangles.size() == 1 || node->depth > 32) {
         state.addLeafNode(node);
         return;
     }
@@ -180,8 +180,7 @@ std::optional<HitInfo> BVH::intersect(const Ray &ray, float t_min, float t_max) 
             for (size_t i = 0; i < node.triangle_count; i ++) {
                 auto hit_info = triangle_iter->intersect(ray, t_min, t_max);
                 ++triangle_iter;
-                if (hit_info) 
-                {
+                if (hit_info) {
                     t_max = hit_info->t;
                     closest_hit_info = hit_info;
                 }

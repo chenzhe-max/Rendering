@@ -4,16 +4,15 @@
 
 #include "../camera/camera.hpp"
 #include "../shape/scene.hpp"
-#include "../util/rng.hpp"
-//宏的参数就是具体渲染器的名字
 
+//宏的参数就是具体渲染器的名字
 #define DEFINE_RENDERER(Name) \
     class Name##Renderer : public BaseRenderer { \
     public: \
         Name##Renderer(Camera &camera, const Scene &scene) : BaseRenderer(camera, scene) {} \
     private: \
-        glm::vec3 renderPixel(const glm::ivec2 &pixel_coord) override; \
-    }; \
+        glm::vec3 renderPixel(const glm::ivec3 &pixel_coord) override; \
+        }; \
 
 
 //所有的渲染器都要继承自这个类
@@ -25,12 +24,9 @@ public:
     //用于渲染出一张图片，参数是每个像素的样本数以及存储的图片名
     void render(size_t spp, const std::filesystem::path &filename);
 private:
-    virtual glm::vec3 renderPixel(const glm::ivec2 &pixel_coord) = 0;
-protected:
+    virtual glm::vec3 renderPixel(const glm::ivec3 &pixel_coord) = 0;
+    protected:
     Camera &camera;
     const Scene &scene;
-    RNG rng {};
 };
-
-
 

@@ -26,3 +26,4 @@ struct HitInfo{
     const Material *material = nullptr;
 
 };
+

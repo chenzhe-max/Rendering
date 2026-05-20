@@ -31,3 +31,4 @@ private:
     size_t width, height;
     std::vector<Pixel> pixels;
 };
+

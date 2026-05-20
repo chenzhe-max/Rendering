@@ -23,3 +23,4 @@ private:
     //world_from_camera就是glm里一个叫做lookAt函数的逆矩阵
     glm::mat4 world_from_camera; //从相机空间到世界空间 相机空间就是相机原点为坐标系原点，坐标系方向取决于相机观察方向；世界空间就是全局的坐标系
 };
+

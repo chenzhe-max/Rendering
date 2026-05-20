@@ -1,6 +1,5 @@
 ﻿#include "shape/sphere.hpp"
 
-//用于相交测试的函数
 std::optional<HitInfo> Sphere::intersect(const Ray &ray, float t_min, float t_max) const {
     glm::vec3 co = ray.origin - center;
     float a = glm::dot(ray.direction, ray.direction);
@@ -9,7 +8,7 @@ std::optional<HitInfo> Sphere::intersect(const Ray &ray, float t_min, float t_ma
     float delta = b * b - 4 * a * c;
     if (delta < 0) { return {}; }
     float hit_t = (-b - glm::sqrt(delta)) * 0.5 / a;
-    if (hit_t <= t_min) {
+    if (hit_t < 0) {
         hit_t = (-b + glm::sqrt(delta)) * 0.5 / a;
     }
     if (hit_t > t_min && hit_t < t_max) {
@@ -19,4 +18,3 @@ std::optional<HitInfo> Sphere::intersect(const Ray &ray, float t_min, float t_ma
     }
     return {};
 }
-

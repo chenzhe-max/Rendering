@@ -11,12 +11,12 @@ void BaseRenderer::render(size_t spp, const std::filesystem::path &filename) {
 
     size_t current_spp = 0, increase = 1;
     auto &film = camera.getFilm();
-    film.clear(); //这个clear需要在每次渲染前都调用一次，就直接写在render函数中了
+    film.clear();//这个clear需要在每次渲染前都调用一次，就直接写在render函数中了
     Progress progress(film.getWidth() * film.getHeight() * spp, 20);
     while (current_spp < spp) {
         thread_pool.parallelFor(film.getWidth(), film.getHeight(), [&](size_t x, size_t y) {
             for (int i = 0; i < increase; i ++) {
-                film.addSample(x, y, renderPixel({ x, y }));
+                film.addSample(x, y, renderPixel({ x, y, current_spp + i }));
             }
             progress.update(increase);
         });
